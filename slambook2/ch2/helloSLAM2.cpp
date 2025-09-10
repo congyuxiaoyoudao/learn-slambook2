@@ -2,6 +2,6 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-    cout << "Damn, boy!" << endl;
+    cout << "[From helloSLAM2.cpp]: Damn, boy!" << endl;
     return 0;
 }
