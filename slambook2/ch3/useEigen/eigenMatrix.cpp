@@ -53,17 +53,18 @@ int main(int argc, char **argv) {
   vd_3d << 4, 5, 6;
 
   // 但是在Eigen里你不能混合两种不同类型的矩阵，像这样是错的
-  // Matrix<double, 2, 1> result_wrong_type = matrix_23 * v_3d;
+  // Matrix<double, 2, 1> result_wrong_type = matrix_23 * v_3d; // float double
   // 应该显式转换
-  Matrix<double, 2, 1> result = matrix_23.cast<double>() * v_3d;
+  Matrix<double, 2, 1> result = matrix_23.cast<double>() * v_3d; // double double
   cout << "[1,2,3;4,5,6]*[3,2,1]=" << result.transpose() << endl;
 
-  Matrix<float, 2, 1> result2 = matrix_23 * vd_3d;
+  Matrix<float, 2, 1> result2 = matrix_23 * vd_3d; // float float
   cout << "[1,2,3;4,5,6]*[4,5,6]: " << result2.transpose() << endl;
 
   // 同样你不能搞错矩阵的维度
   // 试着取消下面的注释，看看Eigen会报什么错
   // Eigen::Matrix<double, 2, 3> result_wrong_dimension = matrix_23.cast<double>() * v_3d;
+  // error: static assertion failed: YOU_MIXED_MATRICES_OF_DIFFERENT_SIZES
 
   // 一些矩阵运算
   // 四则运算就不演示了，直接用+-*/即可。
@@ -89,27 +90,27 @@ int main(int argc, char **argv) {
 
   Matrix<double, MATRIX_SIZE, MATRIX_SIZE> matrix_NN
       = MatrixXd::Random(MATRIX_SIZE, MATRIX_SIZE);
-  matrix_NN = matrix_NN * matrix_NN.transpose();  // 保证半正定
+  matrix_NN = matrix_NN * matrix_NN.transpose();  // 保证半正定 Gram matrix
   Matrix<double, MATRIX_SIZE, 1> v_Nd = MatrixXd::Random(MATRIX_SIZE, 1);
 
   clock_t time_stt = clock(); // 计时
   // 直接求逆
   Matrix<double, MATRIX_SIZE, 1> x = matrix_NN.inverse() * v_Nd;
-  cout << "time of normal inverse is "
+  cout << "time of normal inverse is " // 0.062ms
        << 1000 * (clock() - time_stt) / (double) CLOCKS_PER_SEC << "ms" << endl;
   cout << "x = " << x.transpose() << endl;
 
   // 通常用矩阵分解来求，例如QR分解，速度会快很多
   time_stt = clock();
   x = matrix_NN.colPivHouseholderQr().solve(v_Nd);
-  cout << "time of Qr decomposition is "
+  cout << "time of Qr decomposition is " // 0.043ms
        << 1000 * (clock() - time_stt) / (double) CLOCKS_PER_SEC << "ms" << endl;
   cout << "x = " << x.transpose() << endl;
 
   // 对于正定矩阵，还可以用cholesky分解来解方程
   time_stt = clock();
   x = matrix_NN.ldlt().solve(v_Nd);
-  cout << "time of ldlt decomposition is "
+  cout << "time of ldlt decomposition is " // 0.017ms
        << 1000 * (clock() - time_stt) / (double) CLOCKS_PER_SEC << "ms" << endl;
   cout << "x = " << x.transpose() << endl;
 

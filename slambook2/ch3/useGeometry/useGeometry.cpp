@@ -45,6 +45,24 @@ int main(int argc, char **argv) {
   cout << "v tranformed = " << v_transformed.transpose() << endl;
 
   // 对于仿射和射影变换，使用 Eigen::Affine3d 和 Eigen::Projective3d 即可，略
+  // Affine Transform
+  Affine3d Ta = Affine3d::Identity();
+	Ta.translate(Vector3d(1, 3, 4));
+	Ta.rotate(rotation_vector);
+  Ta.scale(2.0);
+  cout << "Affine Transform matrix = \n" << Ta.matrix() << endl;
+  Vector3d v_affine_transformed = Ta * v; // T*R*S*v
+  cout << "v affine tranformed = " << v_affine_transformed.transpose() << endl;
+
+  // Projective Transform
+  Projective3d Tp = Projective3d::Identity();
+	Tp.translate(Vector3d(1, 3, 4));
+	Tp.rotate(rotation_vector);
+  Tp.scale(2.0);
+  cout << "Projective Transform matrix = \n" << Tp.matrix() << endl;
+  Vector4d v_proj_transformed = Tp * Vector4d(1.0, 0.0, 0.0, 1.0); // T*R*S*v
+  cout << "v Projective tranformed = " << v_proj_transformed.transpose() << endl;
+
 
   // 四元数
   // 可以直接把AngleAxis赋值给四元数，反之亦然
@@ -58,7 +76,11 @@ int main(int argc, char **argv) {
   v_rotated = q * v; // 注意数学上是qvq^{-1}
   cout << "(1,0,0) after rotation = " << v_rotated.transpose() << endl;
   // 用常规向量乘法表示，则应该如下计算
+  // So here the original vector v=(1,0,0), to construct a pure quaternion of v
+  // either directly construct a quaternion in the sequence w, x, y, z
+  // or construct a 4d vector in the sequence of x, y, z, w 
   cout << "should be equal to " << (q * Quaterniond(0, 1, 0, 0) * q.inverse()).coeffs().transpose() << endl;
+  // cout << "should be equal to " << (q * Quaterniond((Vector4d(1, 0, 0, 0))) * q.inverse()).coeffs().transpose() << endl;
 
   return 0;
 }
