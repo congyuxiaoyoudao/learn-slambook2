@@ -30,7 +30,29 @@ int main(int argc, char **argv) {
 
   // 增量扰动模型的更新
   Vector3d update_so3(1e-4,0,0); //假设更新量为这么多
+  Sophus::SO3d SO3_updated = Sophus::SO3d::exp(update_so3) * SO3_R;
+  cout << "SO(3) updated: \n" << SO3_updated.matrix() << endl;
 
-
+  cout << "*********************************************" << endl;
+  
+  // almost same for SE(3)
+  Vector3d t(1, 0, 0);
+  Sophus::SE3d SE3_Rt(R, t); // from R, t
+  Sophus::SE3d SE3_qt(q, t); // from q, t
+  cout << "SE(3) from R, t: \n" << SE3_Rt.matrix() << endl;
+  cout << "SE(3) from q, t: \n" << SE3_qt.matrix() << endl;
+  cout << "they are equal" << endl;
+  // also, hat and vee operations
+  typedef Matrix<double, 6, 1> Vector6d;
+  Vector6d se3 = SE3_Rt.log();
+  cout << "se3 = " << se3.transpose() << endl;
+  cout << "se3 hat=\n" << Sophus::SE3d::hat(se3) << endl;
+  cout << "se3 hat vee=" << Sophus::SE3d::vee(Sophus::SE3d::hat(se3)).transpose() << endl;
+  // update se3
+  Vector6d update_se3;
+  update_se3.setZero();
+  update_se3(0, 0) = 1e-4;
+  Sophus::SE3d SE3_updated = Sophus::SE3d::exp(update_se3) * SE3_Rt;
+  cout << "SE(3) updated: \n" << SE3_updated.matrix() << endl;
   return 0;
 }
