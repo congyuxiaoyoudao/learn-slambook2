@@ -34,7 +34,8 @@ int main(int argc, char **argv) {
 
     cout << "The big matrix: \n" << bigMatrix << endl;
 
-    Matrix3d extractedBlock = bigMatrix.block<3,3>(0,0);
+    Matrix3d extractedBlock = bigMatrix.block<3,3>(0,0); // or can write as below
+    // Matrix3d extractedBlock = bigMatrix.block(0,0,2,2); 
 
     cout << "The extracted matrix block: \n" << extractedBlock << endl;
 
