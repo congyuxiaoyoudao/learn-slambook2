@@ -24,14 +24,21 @@ int main(int argc, char **argv) {
 
   // compute rmse
   double rmse = 0;
+  double rmse_trans = 0;
   for (size_t i = 0; i < estimated.size(); i++) {
     Sophus::SE3d p1 = estimated[i], p2 = groundtruth[i];
-    double error = (p2.inverse() * p1).log().norm();
-    rmse += error * error;
+    Sophus::SE3d relative_transform = p2.inverse() * p1;
+    double rmse_error = relative_transform.log().norm();
+    double rmse_trans_error = relative_transform.translation().norm();
+    rmse += rmse_error * rmse_error;
+    rmse_trans += rmse_trans_error * rmse_trans_error;
   }
   rmse = rmse / double(estimated.size());
+  rmse_trans = rmse_trans / double(estimated.size());
   rmse = sqrt(rmse);
-  cout << "RMSE = " << rmse << endl;
+  rmse_trans = sqrt(rmse_trans);
+  cout << "RMSE = " << rmse << endl; // should be 2.20728
+  cout << "RMSE Translation = " << rmse_trans << endl; // should be 0.0231005
 
   DrawTrajectory(groundtruth, estimated);
   return 0;
