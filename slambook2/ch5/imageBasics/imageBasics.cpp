@@ -40,13 +40,34 @@ int main(int argc, char **argv) {
       unsigned char *data_ptr = &row_ptr[x * image.channels()]; // data_ptr 指向待访问的像素数据
       // 输出该像素的每个通道,如果是灰度图就只有一个通道
       for (int c = 0; c != image.channels(); c++) {
-        unsigned char data = data_ptr[c]; // data为I(x,y)第c个通道的值
+        // here i add `volatile` or the compiler may do optimization
+        volatile unsigned char data = data_ptr[c]; // data为I(x,y)第c个通道的值
       }
     }
   }
   chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
   chrono::duration<double> time_used = chrono::duration_cast < chrono::duration < double >> (t2 - t1);
-  cout << "遍历图像用时：" << time_used.count() << " 秒。" << endl;
+  cout << "遍历图像用时：" << time_used.count() << " 秒。" << endl; // 0.00126402
+
+  // using cv::Mat::data for traversal
+  unsigned char* start = image.data;
+  unsigned char* end = image.data + image.rows * image.cols * image.channels();
+  t1 = chrono::steady_clock::now();
+  for (unsigned char* data_ptr = start; data_ptr < end; data_ptr +=sizeof(unsigned char)) {
+      volatile unsigned char data = *data_ptr;
+  }
+  t2 = chrono::steady_clock::now();
+  time_used = chrono::duration_cast < chrono::duration < double >> (t2 - t1);
+  cout << "使用 cv::Mat::data 遍历图像用时：" << time_used.count() << " 秒。" << endl; // 0.000420522
+
+  // using iterator for traversal, it's faster
+  t1 = chrono::steady_clock::now();
+  for (cv::MatIterator_<unsigned char> it = image.begin<unsigned char>(), end = image.end<unsigned char>(); it != end; ++it) {
+      volatile unsigned char data = (*it);
+  }
+  t2 = chrono::steady_clock::now();
+  time_used = chrono::duration_cast < chrono::duration < double >> (t2 - t1);
+  cout << "使用迭代器遍历图像用时：" << time_used.count() << " 秒。" << endl; // 0.000405815
 
   // 关于 cv::Mat 的拷贝
   // 直接赋值并不会拷贝数据

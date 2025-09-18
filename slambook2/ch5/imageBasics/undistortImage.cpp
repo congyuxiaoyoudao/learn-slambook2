@@ -3,8 +3,7 @@
 
 using namespace std;
 
-string image_file = "./distorted.png";   // 请确保路径正确
-
+string image_file = "../imageBasics/distorted.png";   // 请确保路径正确
 int main(int argc, char **argv) {
 
   // 本程序实现去畸变部分的代码。尽管我们可以调用OpenCV的去畸变，但自己实现一遍有助于理解。
@@ -37,9 +36,17 @@ int main(int argc, char **argv) {
     }
   }
 
+  // So we also can use build-in functions defined in opencv to help us
+  cv::Mat image_undistort_opencv = cv::Mat(rows, cols, CV_8UC1); 
+  // define camera matrix and distort coefs
+  cv::Mat intrinsic_matrix = (cv::Mat_<float>(3,3) << fx, 0, cx, 0, fy, cy, 0, 0, 1);
+  cv::Vec4f distort_coefs (k1, k2, p1, p2);
+  cv::undistort(image, image_undistort_opencv, intrinsic_matrix, distort_coefs);
+
   // 画图去畸变后图像
   cv::imshow("distorted", image);
   cv::imshow("undistorted", image_undistort);
+  cv::imshow("undistorted_opencv", image_undistort_opencv);
   cv::waitKey();
   return 0;
 }
