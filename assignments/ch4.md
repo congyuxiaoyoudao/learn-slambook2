@@ -202,21 +202,21 @@
     &=\lim_{\delta\xi\to 0}\frac{\exp(\xi^{\wedge})(I+\delta\xi^{\wedge})p-\exp(\xi^{\wedge})p}{\delta\xi}\\
     &=\lim_{\delta\xi\to 0}\frac{\exp(\xi^{\wedge})\delta\xi^{\wedge} p}{\delta\xi}\\
     &=\lim_{\delta\xi\to 0}\frac{\begin{bmatrix}
-    R & \mathbb{t} \\
+    R & \mathbf{t} \\
     \mathbf{0}^{T} & 1 
     \end{bmatrix}\begin{bmatrix}
     \delta\phi^{\wedge} & \delta \rho\\
-    \mathbb{0} & 1
+    \mathbf{0} & 1
     \end{bmatrix}p
     }{\delta\xi}\\
     &=\lim_{\delta\xi\to 0}\frac{\begin{bmatrix}
     R\delta\phi^{\wedge}p+R\delta\rho\\
-    \mathbb{0}^T
+    \mathbf{0}^T
     \end{bmatrix}}{\begin{bmatrix}
     \delta\rho & \delta\phi 
     \end{bmatrix}^T}=\begin{bmatrix}
     R & -Rp^{\wedge} \\
-    \mathbb{0}^T & \mathbb{0}^T
+    \mathbf{0}^T & \mathbf{0}^T
     \end{bmatrix}
     \end{aligned}
     $$
